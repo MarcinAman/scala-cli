@@ -621,18 +621,20 @@ private def commitChanges(name: String, branch: String, repoDir: os.Path): Unit 
     println("Nothing Changes")
   }
   else {
+    val branchTest = "virtuslab-test"
     os.proc("git", "add", "-A").call(cwd = repoDir)
     os.proc("git", "commit", "-am", name).call(cwd = repoDir)
-    println(s"Trying to push on $branch branch")
-    os.proc("git", "push", "origin", branch).call(cwd = repoDir)
-    println(s"Push successfully on $branch branch")
+    os.proc("git", "checkout", "-b", branchTest).call(cwd = repoDir)
+    println(s"Trying to push on $branchTest branch")
+    os.proc("git", "push", "origin", branchTest, "--force").call(cwd = repoDir)
+    println(s"Push successfully on $branchTest branch")
   }
 }
 
 // TODO Move most CI-specific tasks there
 object ci extends Module {
   def updateBrewFormula() = T.command {
-    val version = cli.publishVersion()
+    val version = "0.0.1"
 
     val targetDir          = os.pwd / "target"
     val homebrewFormulaDir = targetDir / "homebrew-scala-cli"
@@ -679,7 +681,7 @@ object ci extends Module {
     commitChanges(s"Update for $version", branch, homebrewFormulaDir)
   }
   def updateDebianPackages() = T.command {
-    val version = cli.publishVersion()
+    val version = "0.0.1"
 
     val targetDir   = os.pwd / "target"
     val packagesDir = targetDir / "scala-cli-packages"
@@ -747,7 +749,7 @@ object ci extends Module {
     commitChanges(s"Update Debian packages for $version", "master", packagesDir)
   }
   def updateCentOsPackages() = T.command {
-    val version = cli.publishVersion()
+    val version = "0.0.1"
 
     val targetDir   = os.pwd / "target"
     val packagesDir = targetDir / "scala-cli-packages"
