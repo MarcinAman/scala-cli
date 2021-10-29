@@ -11,7 +11,7 @@ import scala.util.Properties
 
 object ScalaCli extends CommandsEntryPoint {
 
-  def actualDefaultCommand = Default
+  def actualDefaultCommand = HelpCommand
 
   val commands: Seq[ScalaCommand[_]] = Seq(
     About,
@@ -32,7 +32,8 @@ object ScalaCli extends CommandsEntryPoint {
     Run,
     SetupIde,
     Test,
-    Version
+    Version,
+    HelpCommand,
   )
 
   lazy val progName                 = (new Argv0).get("scala-cli")
@@ -81,9 +82,6 @@ object ScalaCli extends CommandsEntryPoint {
       // Enable ANSI output in Windows terminal
       coursier.jniutils.WindowsAnsiTerminal.enableAnsiOutput()
 
-    // quick hack, until the raw args are kept in caseapp.RemainingArgs by case-app
-    actualDefaultCommand.anyArgs = args.nonEmpty
-
     commands.foreach {
       case c: NeedsArgvCommand => c.setArgv(progName +: args)
       case _                   =>
@@ -94,6 +92,10 @@ object ScalaCli extends CommandsEntryPoint {
         Array(args(0), "--") ++ args.tail
       else
         args
+
+    // quick hack, until the raw args are kept in caseapp.RemainingArgs by case-app
+    actualDefaultCommand.anyArgs = (args diff processedArgs).nonEmpty
+
     super.main(processedArgs)
   }
 }

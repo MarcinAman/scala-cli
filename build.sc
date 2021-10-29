@@ -378,6 +378,7 @@ trait CliIntegrationBase extends SbtModule with ScalaCliPublishModule with HasTe
            |  def dockerTestImage = "${Docker.testImage}"
            |  def dockerAlpineTestImage = "${Docker.alpineTestImage}"
            |  def cs = "${settings.cs().replace("\\", "\\\\")}"
+           |  def version = "${publishVersion()}"
            |}
            |""".stripMargin
       if (!os.isFile(dest) || os.read(dest) != code)
